@@ -1,0 +1,144 @@
+class Game{
+    field int direction;
+    field Level level;
+    field int sizex;
+    field boolean exit;
+
+    constructor Game new(){
+        let level = Level.new(25);
+        do level.createLevel();
+        return this;
+    }
+    /** Disposes this game. */
+    method void dispose() {
+        do level.dispose();
+        do Memory.deAlloc(this);
+        return;
+    }
+
+    /** Moves the player in the current direction. */
+    method void moveLevel() {
+       if (direction = 1) { do level.moveUp(); }
+       if (direction = 2) { do level.moveDown(); }
+       if (direction = 3) { do level.moveLeft(); }
+       if (direction = 4) { do level.moveRight(); }
+       do Sys.wait(20);  // delays the next movement
+       return;
+    }
+
+    /** Runs the game: handles the user's inputs and moves the player accordingly */
+    method void run() {
+       var char key;  // the key currently pressed by the user
+       let exit = false;
+
+       do titleScreen();
+       while((Keyboard.keyPressed() = 0)){
+           do Sys.wait(1);
+       }
+
+       do Screen.clearScreen();
+       do printUI();
+       do level.print();
+
+       while (~exit) {
+           //gameOver if fatal status
+           if(level.isFatal()){
+               do level.gameOver();
+               return;
+           }
+
+           if(level.isVictory()){
+               do level.victory();
+               return;
+           }
+          // waits for a key to be pressed
+          while (key = 0) {
+             let key = Keyboard.keyPressed();
+          }
+          if (key = 81)  { let exit = true; }     // q key
+          if (key = 131) { let direction = 1; }   // up arrow
+          if (key = 133) { let direction = 2; }   // down arrow
+          if (key = 130) { let direction = 3; }   // left arrow
+          if (key = 132) { let direction = 4; }   // right arrow
+
+          // waits for the key to be released
+          while (~(key = 0)) {
+             do moveLevel();
+             do level.detectPickup();
+             do printUI();
+             do level.updateStatus();
+             let key = 0;
+          }
+      } // while
+      return;
+  }
+
+  method void printUI(){
+      var String players, healths, energys, attacklst, attacks, lvls, scores, attacklabel;
+
+      //main game window
+      do Screen.drawLine(10,10,300,10);
+      do Screen.drawLine(10,200,300,200);
+      do Screen.drawLine(10,10,10,200);
+      do Screen.drawLine(300,10,300,200);
+
+      // status window
+      do Screen.drawLine(310, 60, 310,200);
+      do Screen.drawLine(485, 60, 485,200);
+      do Screen.drawLine(310, 60, 485,60);
+      do Screen.drawLine(310, 200, 485,200);
+
+      //player status
+      let players = "<< Player >>";
+      let healths = "Health:  ";
+      let energys = "Energy: ";
+      let attacklst = "- Attack List -";
+      let attacklabel = "          (D)(E)";
+      let attacks = "NRG Regen:";
+      let lvls = "Level:    Mines";
+      let scores = "Score:  ";
+      do Output.moveCursor(1, 45);
+      do Output.printString(players);
+      do Output.moveCursor(3, 40);
+      do Output.printString(healths);
+      do Output.moveCursor(4, 40);
+      do Output.printString(energys);
+      do Output.moveCursor(6, 42);
+      do Output.printString(attacklst);
+      do Output.moveCursor(8, 44);
+      do Output.printString(attacklabel);
+      do Output.moveCursor(19, 40);
+      do Output.printString(attacks);
+      do Output.moveCursor(20, 40);
+      do Output.printString(lvls);
+      do Output.moveCursor(21, 40);
+      do Output.printString(scores);
+
+      do level.updateStatus();
+
+      do players.dispose();
+      do healths.dispose();
+      do energys.dispose();
+      do attacklabel.dispose();
+      do attacklst.dispose();
+      do attacks.dispose();
+      do lvls.dispose();
+      do scores.dispose();
+
+      return;
+  }
+
+  method void titleScreen(){
+      do Screen.clearScreen();
+      do Output.moveCursor(9,23);
+      do Output.printString("*               *");
+      do Output.moveCursor(10,23);
+      do Output.printString("| ASCII Dungeon |");
+      do Output.moveCursor(12,17);
+      do Output.printString("..Press any key to Continue..");
+      do Sys.wait(20);
+      return;
+  }
+
+
+}

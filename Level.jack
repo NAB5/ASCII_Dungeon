@@ -1,0 +1,452 @@
+class Level{
+    field int size;
+    field Array array;
+    field Player player;
+    field String tempString;
+    field String line;
+    field String name1, energy1, damage1;
+    field char temp;
+    field boolean victory;
+    field char collision;
+    field Attack attackTemp1;
+
+    field Attack fist;
+    field Attack sword;
+    field Attack fireball;
+    field Attack axe;
+    field Attack rpg;
+    field Array attacks;
+
+    constructor Level new(int sz){
+        let size  = sz;
+        let collision = 32;
+        let array = Array.new(sz);
+        let victory = false;
+        let energy1 = "  ";
+        let damage1 = "  ";
+
+        let attacks = Array.new(4);
+        let fist = Attack.new(2,2,"Fist");
+        let sword = Attack.new(8,2,"Sword");
+        let fireball = Attack.new(10,10,"Fireball");
+        let rpg = Attack.new(20,15, "*RPG*");
+        let axe = Attack.new(5,1,"Axe");
+        let attacks[0] = fist;
+        let attacks[1] = sword;
+        let attacks[2] = fireball;
+        let attacks[3] = axe;
+
+        let player = Player.new(1,1,99,50, 99);
+        return this;
+    }
+
+    method void print(){
+
+        var int i,j,x,y,k;
+        var char spce;
+        let spce = 32;
+        let line = "                                  ";
+        let k = 0;
+        let x = player.getPosX();
+        let y = player.getPosY();
+        let i = y-8;
+        do Output.moveCursor(1,2);
+
+        while(i < (y+8)){
+            let j = x-17;
+            if((i < 0) | (i > (size-1))) {do Output.printString(line);}
+            else{
+                let tempString = array[i];
+                while(j < (x+17)){
+                    if((j < 0) | (j > (tempString.length()-1))){
+                            do Output.printChar(spce);
+                    }
+                    else{
+                        do Output.printChar(tempString.charAt(j));
+                    }
+                    let j = j + 1;
+                }
+            }
+            let i = i + 1;
+            let k = k + 1;
+            do Output.moveCursor(1+k,2);
+        }
+
+
+        do line.dispose();
+        return;
+    }
+
+    method void createLevel(){
+        let array[0] = "###########################################################################################";
+        let array[1] = "#@                X                     F  H              |      X                XX    $ #";
+        let array[2] = "#             #########   #################################         X           X   F   $ #";
+        let array[3] = "###############       #   #           #                   |      X             X        $ #";
+        let array[4] = "                      # X #           #     X             #        X             X  H   $ #";
+        let array[5] = "##########            #   #           #          ##########     X                  XX   $ #";
+        let array[6] = "#   F    #     ########   ##          #####   ####        #################################";
+        let array[7] = "# $   $  #######           #              #   #                                            ";
+        let array[8] = "#   H    |  X  |           #              # X #                                            ";
+        let array[9] = "#        ###################              #   #   ##################     ##################";
+        let array[10]= "#        #                          ##### #   #   #                #     #               $#";
+        let array[11]= "#        #                          #         #   #       X        #     #     X          #";
+        let array[12]= "#        #                          #      #########                ######                #";
+        let array[13]= "# XXXXXX #    ###################   #      |          X   R        |     |       X   X    #";
+        let array[14]= "#        #    #                 #   #      #########          X     ######                #";
+        let array[15]= "#  F     ######                 #####      #       #                #     ######          #";
+        let array[16]= "#        |  X |       $H$          |       #       #                #          #        $ #";
+        let array[17]= "#        ######                 ############       #######    #######          ############";
+        let array[18]= "#        #    #                 #                        #    #                            ";
+        let array[19]= "##########    ###################             ############    ###############              ";
+        let array[20]= "                            #############     #                      X   $ F #             ";
+        let array[21]= "                            #           #### #                      X    H F  #            ";
+        let array[22]= "#############################       X        |  X                    X    $ F   #          ";
+        let array[23]= "# E       X      |      X    |             ######################################          ";
+        let array[24]= "############################################                                               ";
+
+
+        return;
+    }
+
+    method void moveRight(){
+        var int x,y;
+        let x = player.getPosX();
+        let y = player.getPosY();
+        let tempString = array[y];
+        if ((tempString.length() < (x+2)) | (tempString.charAt(x+1) = 35)){
+            return;
+        }
+
+        let temp = tempString.charAt(x+1);
+        do tempString.setCharAt(x+1, 64);
+        do tempString.setCharAt(x, collision);
+        let array[y] = tempString;
+        let collision = temp;
+        do player.setPos(x+1, y);
+        do print();
+        do player.addEnergy(-1);
+        return;
+    }
+
+    method void moveLeft(){
+        var int x,y;
+        var char temp;
+        let x = player.getPosX();
+        let y = player.getPosY();
+        let tempString = array[y];
+        if ((0 > (x-1)) | (tempString.charAt(x-1) = 35)) {
+            return;
+        }
+
+        let temp = tempString.charAt(x-1);
+        do tempString.setCharAt(x-1, 64);
+        do tempString.setCharAt(x, collision);
+        let array[y] = tempString;
+        let collision = temp;
+        do player.setPos(x-1, y);
+        do player.addEnergy(-1);
+        do print();
+
+        return;
+    }
+    method void moveUp(){
+        var int x,y;
+        var String tempString2;
+        let x = player.getPosX();
+        let y = player.getPosY();
+        let tempString = array[y];
+        let tempString2 = array[y-1];
+        if ((0 > (y-1)) | (tempString2.charAt(x) = 35)){
+            return;
+        }
+
+        let temp = tempString2.charAt(x);
+        do tempString.setCharAt(x, collision);
+        do tempString2.setCharAt(x, 64);
+        let array[y] = tempString;
+        let array[y-1] = tempString2;
+        let collision = temp;
+        do player.setPos(x, y-1);
+        do player.addEnergy(-1);
+        do print();
+
+        return;
+    }
+    method void moveDown(){
+        var int x,y;
+        var String tempString2;
+        let x = player.getPosX();
+        let y = player.getPosY();
+        let tempString = array[y];
+        let tempString2 = array[y+1];
+        if ((size < (y+2)) | (tempString2.charAt(x) = 35)){
+            return;
+        }
+
+        let temp = tempString2.charAt(x);
+        do tempString.setCharAt(x, collision);
+        do tempString2.setCharAt(x, 64);
+        let array[y] = tempString;
+        let array[y+1] = tempString2;
+        let collision = temp;
+        do player.setPos(x, y+1);
+        do player.addEnergy(-1);
+        do print();
+
+        return;
+    }
+
+    method char detectPickup(){
+        var String door, exit, default, enemy, energy;
+        let default = "Status:                         ";
+        let door = "Status: Entered Door!              ";
+        let exit = "Status: You found the exit!         ";
+        let enemy = "Status: You attacked an enemy!       ";
+        if(collision  = 124) { // if player hits | or -
+            do Output.moveCursor(20,2);
+            do Output.printString(door);
+            do door.dispose();
+            do exit.dispose();
+            do default.dispose();
+            do enemy.dispose();
+            return collision;
+        }
+
+        if(collision  = 69) { // if player hits | or -
+            do Output.moveCursor(20,2);
+            do Output.printString(exit);
+            let victory = true;
+            do exit.dispose();
+            do door.dispose();
+            do enemy.dispose();
+            do default.dispose();
+            return collision;
+        }
+
+        if(collision  = 88) { // if player hits enemy
+            do Output.moveCursor(20,2);
+            do Output.printString(enemy);
+            do Sys.wait(500);
+            do battleScreen();
+            let collision = 32;
+            do exit.dispose();
+            do door.dispose();
+            do default.dispose();
+            do enemy.dispose();
+            return collision;
+        }
+
+        if(collision  = 70) { // food
+            do Output.moveCursor(20,2);
+            do Output.printString(default);
+            do Sys.wait(500);
+            do player.addEnergy(50);
+            let collision = 32;
+            do exit.dispose();
+            do door.dispose();
+            do default.dispose();
+            do enemy.dispose();
+            return collision;
+        }
+
+        if(collision  = 72) { // health
+            do Output.moveCursor(20,2);
+            do Output.printString(default);
+            do Sys.wait(500);
+            do player.addHealth(20);
+            let collision = 32;
+            do exit.dispose();
+            do door.dispose();
+            do default.dispose();
+            do enemy.dispose();
+            return collision;
+        }
+
+        if(collision  = 36) { // score
+            do Output.moveCursor(20,2);
+            do Output.printString(default);
+            do Sys.wait(500);
+            do player.addScore(50);
+            let collision = 32;
+            do exit.dispose();
+            do door.dispose();
+            do default.dispose();
+            do enemy.dispose();
+            return collision;
+        }
+
+        if(collision  = 82) { // RPG
+            do Output.moveCursor(20,2);
+            do Output.printString(default);
+            do Sys.wait(500);
+            let attacks[0] = rpg;
+            let collision = 32;
+            do exit.dispose();
+            do door.dispose();
+            do default.dispose();
+            do enemy.dispose();
+            return collision;
+        }
+
+        do Output.moveCursor(20,2);
+        do Output.printString(default);
+        do exit.dispose();
+        do default.dispose();
+        do door.dispose();
+        do enemy.dispose();
+        return collision;
+    }
+
+    method void updateStatus(){
+        var String attack, health, energy, score;
+
+        let attack =Strings.coerceInt(player.getRegen());
+        let health =Strings.coerceInt(player.getHealth());
+        let energy =Strings.coerceInt(player.getEnergy());
+        let score =Strings.coerceInt(player.getScore());
+        do Output.moveCursor(3, 50);
+        do Output.printString(health);
+        do Output.moveCursor(4, 50);
+        do Output.printString(energy);
+        do Output.moveCursor(19, 50);
+        do Output.printString(attack);
+        do Output.moveCursor(21, 50);
+        do Output.printString(score);
+        do printAttacks();
+
+        do attack.dispose();
+        do health.dispose();
+        do energy.dispose();
+        do score.dispose();
+
+        return;
+    }
+
+    method void printAttacks(){
+        var int i;
+
+
+        let i = 0;
+        while(i < 4){
+            let attackTemp1 = attacks[i];
+            let name1 = attackTemp1.getName();
+            do damage1.setInt(attackTemp1.getDamage());
+            do energy1.setInt(attackTemp1.getEnergy());
+            do Output.moveCursor((i*2)+9, 40);
+            do Output.printString(name1);
+            do Output.moveCursor((i*2)+9, 55);
+            do Output.printString(damage1);
+            do Output.moveCursor((i*2)+9, 58);
+            do Output.printString(energy1);
+            let i = i+1;
+
+        }
+
+        return;
+    }
+
+    method void battleScreen(){
+        var int enemyHealth, weaponChoice, enemyDamage, playerHealth;
+        var String enemyHealthstr, weapon, enemyDmg;
+        var Attack attackTemp;
+        let enemyHealthstr = "   ";
+        let enemyDmg = "   ";
+        do Random.setSeed(player.getEnergy());
+        let enemyHealth = Random.randRange(50);
+        do enemyHealthstr.setInt(enemyHealth);
+        do Screen.clearScreen();
+        do Output.moveCursor(0,0);
+        do Output.printString("A wild enemy appears!! The enemy has ");
+        do Output.printString(enemyHealthstr);
+        do Output.printString(" health.");
+        do Output.println();
+        do Output.println();
+        do Sys.wait(2000);
+        while (enemyHealth > 0){
+            if(isFatal()) {return;}
+            let weaponChoice = Random.randRange(3);
+            let enemyDamage = Random.randRange(10);
+            let attackTemp = attacks[weaponChoice];
+            let weapon = attackTemp.getName();
+            let enemyHealth = enemyHealth - attackTemp.getDamage();
+            do player.addEnergy(-(attackTemp.getEnergy()));
+            do enemyHealthstr.setInt(enemyHealth);
+            do Output.printString("You hit the enemy with your ");
+            do Output.printString(weapon);
+            do Output.println();
+            do Output.println();
+            do Output.printString("The enemy's health drops to ");
+            do Output.printString(enemyHealthstr);
+            do Output.println();
+            do Output.println();
+            do Sys.wait(1000);
+            do enemyDmg.setInt(enemyDamage);
+            do player.addHealth(-enemyDamage);
+            do Output.printString("The enemy hits you for ");
+            do Output.printString(enemyDmg);
+            do Output.println();
+            do Output.println();
+            do Sys.wait(2000);
+            do Screen.clearScreen();
+            do Output.moveCursor(0,0);
+        }
+        do Output.printString("You are VICTORIOUS! You gain back energy ");
+        do player.addEnergy(player.getRegen());
+        do player.addScore(50);
+        do Output.println();
+        do Output.println();
+        do Sys.wait(2000);
+
+        do Screen.clearScreen();
+        do print();
+        do enemyHealthstr.dispose();
+        return;
+    }
+
+    method boolean isFatal(){
+        if((player.getHealth() < 0) | (player.getEnergy() = 0) | (player.getHealth() < 0) | (player.getEnergy() < 0)){
+            return true;
+        }
+        return false;
+    }
+
+    method void gameOver(){
+        do Screen.clearScreen();
+        do Output.moveCursor(10,25);
+        do Output.printString("GAME OVER!!!");
+        do Output.moveCursor(12,15);
+        do Output.printString("You ran out of energy or health...");
+        do Output.moveCursor(14,15);
+        do Output.printString(Strings.concat("Score: ", Strings.coerceInt(player.getScore())));
+        do Sys.wait(3000);
+        return;
+    }
+
+    method void victory(){
+        do Screen.clearScreen();
+        do Output.moveCursor(10,25);
+        do Output.printString("You Win!!!!!");
+        do Output.moveCursor(12,22);
+        do Output.printString(Strings.concat("Score: ", Strings.coerceInt(player.getScore())));
+        let victory = true;
+        do Sys.wait(3000);
+        return;
+    }
+
+    method boolean isVictory() {return victory;}
+
+    /** Disposes this game. */
+    method void dispose() {
+       do array.dispose();
+       do attackTemp1.dispose();
+       do attacks.dispose();
+       do fist.dispose();
+       do fireball.dispose();
+       do axe.dispose();
+       do sword.dispose();
+       do player.dispose();
+       do Memory.deAlloc(this);
+       return;
+    }
+
+}

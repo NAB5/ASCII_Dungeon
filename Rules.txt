@@ -1,0 +1,8 @@
+RULES
+
+1. Use arrow keys to move around
+2. Try to get to exit "E" without running out of energy or health
+3. Pick up "H" or "F" to restock health and energy respectively
+4. You can also find weapon pickup to make fighting enemies easier
+5. Pick up "$" to increase score. Try to get a high score.
+5. Have fun!

@@ -1,0 +1,76 @@
+class Player{
+    field int health;
+    field int nrgRegen;
+    field int posX;
+    field int posY;
+    field int energy;
+    field int score;
+
+    constructor Player new(int x_pos, int y_pos, int hp, int dmg, int eng){
+        let posX = x_pos;
+        let posY = y_pos;
+        let health = hp;
+        let energy = eng;
+        let nrgRegen = dmg;
+        let score = 0;
+
+        return this;
+    }
+    //set and get nrgRegen stat for player
+    method int getHealth(){return health;}
+    method void addHealth(int hpAmnt){
+        let health = health + hpAmnt;
+        if (health > 99) {let health = 99;}
+        return;
+    }
+
+    //set and get nrgRegen stat for player;
+    method int getRegen(){return nrgRegen;}
+    method void setAttack(int attackAmnt){
+        let nrgRegen = attackAmnt;
+        return;
+    }
+
+    method int getScore(){return score;}
+    method void addScore(int x){
+        let score = score + x;
+        return;
+    }
+
+
+    //set and get posX of player
+    method int getEnergy() {return energy;}
+    method void addEnergy(int x){
+        let energy = energy + x;
+        if (energy > 99) {let energy = 99;}
+        return;
+    }
+
+    //set and get posY of player
+    method int getPosY() {return posY;}
+    method void setPosY(int y){
+        let posY = y;
+        return;
+    }
+
+    //set and get posY of player
+    method int getPosX() {return posX;}
+    method void setPosX(int x){
+        let posX = x;
+        return;
+    }
+
+    //set both x and y of player
+    method void setPos(int x, int y){
+        let posX = x;
+        let posY = y;
+        return;
+    }
+
+    /** Disposes this game. */
+    method void dispose() {
+
+       do Memory.deAlloc(this);
+       return;
+    }
+}

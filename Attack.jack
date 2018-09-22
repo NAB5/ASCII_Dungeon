@@ -1,0 +1,25 @@
+class Attack{
+
+    field int damage;
+    field int energyUse;
+    field String weapon;
+
+    constructor Attack new(int dmg, int eng, String nme){
+        let damage = dmg;
+        let energyUse = eng;
+        let weapon = nme;
+
+        return this;
+    }
+
+    method String getName() {return weapon;}
+    method int getDamage() {return damage;}
+    method int getEnergy() {return energyUse;}
+
+    /** Disposes this game. */
+    method void dispose() {
+        do weapon.dispose();
+       do Memory.deAlloc(this);
+       return;
+    }
+}
